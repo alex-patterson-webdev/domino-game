@@ -1,0 +1,43 @@
+{
+  "name": "alex-patterson-webdev/domino-game",
+  "version": "1.0.0",
+  "minimum-stability": "dev",
+  "prefer-stable": true,
+  "authors": [
+    {
+      "name": "Alex Patterson",
+      "email": "alex.patterson.webdev@gmail.com"
+    }
+  ],
+  "require": {
+    "php": ">=7.4"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^9.1"
+  },
+  "autoload": {
+    "psr-4": {
+      "Arp\\DominoGame\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "ArpTest\\DominoGame\\": "test/phpunit"
+    }
+  },
+  "repositories": [
+    {
+      "type": "composer",
+      "url": "http://dev.satis.local"
+    }
+  ],
+  "scripts": {
+    "test": "php vendor/bin/phpunit --coverage-clover=coverage.xml"
+  },
+  "config": {
+    "secure-http": false,
+    "preferred-install": "dist",
+    "optimize-autoloader": true,
+    "sort-packages": true
+  }
+}
