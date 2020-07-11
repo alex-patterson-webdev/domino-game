@@ -69,10 +69,11 @@ final class DominoGame
         // deal a domino to each player in turn, until they hit their limit
         $this->deck->shuffle();
         foreach ($this->deck as $domino) {
-            foreach ($this->players as $player) {
-                if ($handSize > $player->getHandSize()) {
+            foreach ($this->players->getOrderedByLowestCount() as $player) {
+                if ($player->getHandCount() < $handSize) {
                     $player->addToHand($domino);
-                    // It's vital that we do not add the same domino to each player
+                    $this->deck->removeElement($domino);
+                    // Move on to next domino
                     continue 2;
                 }
             }

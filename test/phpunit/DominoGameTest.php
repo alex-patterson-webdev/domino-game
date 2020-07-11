@@ -7,6 +7,7 @@ namespace ArpTest\DominoGame;
 use Arp\DominoGame\DominoGame;
 use Arp\DominoGame\Exception\DominoGameException;
 use Arp\DominoGame\Value\DominoCollection;
+use Arp\DominoGame\Value\Player;
 use Arp\DominoGame\Value\PlayerCollection;
 use Arp\DominoGame\Value\PlayerInterface;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -154,7 +155,7 @@ final class DominoGameTest extends TestCase
             [0],
             [-1],
             [-100],
-            [-1212]
+            [-1212],
         ];
     }
 
@@ -197,6 +198,57 @@ final class DominoGameTest extends TestCase
         return [
             [28],
             [100],
+        ];
+    }
+
+    /**
+     * Assert that when providing a varied $playerCount we are able to correct deal the number of expected
+     * dominoes to each one
+     *
+     * @covers       \Arp\DominoGame\DominoGame::deal
+     *
+     * @param int $playerCount The number of players to test
+     *
+     * @dataProvider getDealingProvidesTheCorrectNumberOfDominoesToEachPlayerData
+     *
+     * @throws DominoGameException
+     */
+    public function testDealingProvidesTheCorrectNumberOfDominoesToEachPlayer(int $playerCount): void
+    {
+        $deckSize = 28;
+        $handSize = 7;
+
+        $players = [];
+        for ($x = 0; $x < $playerCount; $x++) {
+            $players[] = new Player();
+        }
+
+        $game = new DominoGame(new PlayerCollection($players), 6);
+
+        $game->deal($handSize);
+
+        $deckResult = $game->getDeck();
+        $playersResult = $game->getPlayers();
+
+        $expectedDeckCount = $deckSize - ($playerCount * $handSize);
+
+        $this->assertSame($expectedDeckCount, $deckResult->count());
+
+        /** @var PlayerInterface $player */
+        foreach ($playersResult as $player) {
+            $this->assertSame(7, $player->getHandCount());
+        }
+    }
+
+    /**
+     * @return array
+     */
+    public function getDealingProvidesTheCorrectNumberOfDominoesToEachPlayerData(): array
+    {
+        return [
+            [2],
+            [3],
+            [4],
         ];
     }
 
