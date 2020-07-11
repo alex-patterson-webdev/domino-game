@@ -31,6 +31,14 @@ class Domino
     }
 
     /**
+     * @return string
+     */
+    public function getName(): string
+    {
+        return $this->topTile . '-' . $this->bottomTile;
+    }
+
+    /**
      * Check if the top and bottom dots are equal, a double.
      *
      * @return bool
@@ -108,6 +116,6 @@ class Domino
      */
     public function __toString()
     {
-        return $this->topTile . ' | ' . $this->bottomTile;
+        return $this->getName();
     }
 }
