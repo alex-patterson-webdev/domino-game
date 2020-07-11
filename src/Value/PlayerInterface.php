@@ -20,7 +20,7 @@ interface PlayerInterface
      *
      * @return int
      */
-    public function getHandSize(): int;
+    public function getHandCount(): int;
 
     /**
      * Return the domino collection owned by the player.

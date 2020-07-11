@@ -10,5 +10,20 @@ namespace Arp\DominoGame\Value;
  */
 class PlayerCollection extends AbstractCollection
 {
+    /**
+     * @return PlayerCollection
+     */
+    public function getOrderedByLowestCount(): PlayerCollection
+    {
+        $elements = $this->elements;
 
+        usort(
+            $elements,
+            static function (PlayerInterface $playerA, PlayerInterface $playerB): int {
+                return $playerA->getHandCount() <=> $playerB->getHandCount();
+            }
+        );
+
+        return new PlayerCollection($elements);
+    }
 }

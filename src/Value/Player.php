@@ -52,7 +52,7 @@ final class Player implements PlayerInterface
     /**
      * @return int
      */
-    public function getHandSize(): int
+    public function getHandCount(): int
     {
         return $this->hand->count();
     }

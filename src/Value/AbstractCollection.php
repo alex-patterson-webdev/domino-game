@@ -71,6 +71,24 @@ abstract class AbstractCollection implements CollectionInterface
     }
 
     /**
+     * Remove an element from the collection.
+     *
+     * @param object $element
+     *
+     * @return bool
+     */
+    public function removeElement(object $element): bool
+    {
+        $index = array_search($element, $this->elements, true);
+
+        if (false === $index) {
+            return false;
+        }
+        unset($this->elements[$index]);
+        return true;
+    }
+
+    /**
      * Remove elements from the collection.
      *
      * @param iterable|null $elements
