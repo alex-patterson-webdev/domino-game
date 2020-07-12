@@ -55,9 +55,9 @@ abstract class AbstractCollection implements CollectionInterface
     }
 
     /**
-     * @return iterable
+     * @return array
      */
-    public function getElements(): iterable
+    public function getElements(): array
     {
         return $this->elements;
     }
@@ -106,5 +106,25 @@ abstract class AbstractCollection implements CollectionInterface
                 unset($this->elements[$index]);
             }
         }
+    }
+
+    /**
+     * Return the first element in the collection.
+     *
+     * @return object|null
+     */
+    public function first(): ?object
+    {
+        return $this->elements[0] ?? null;
+    }
+
+    /**
+     * Return the last element in the collection.
+     *
+     * @return object|null
+     */
+    public function last(): ?object
+    {
+        return $this->elements[count($this->elements)-1] ?? null;
     }
 }

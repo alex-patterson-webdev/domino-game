@@ -63,7 +63,7 @@ class Domino
      *
      * @return int
      */
-    public function getBottomTitle(): int
+    public function getBottomTile(): int
     {
         return $this->bottomTile;
     }

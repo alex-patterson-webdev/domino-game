@@ -63,14 +63,23 @@ class DominoCollection extends AbstractCollection
         return shuffle($this->elements);
     }
 
-
-    public function splice(): DominoCollection
+    /**
+     * Add a domino to the start of the collection.
+     *
+     * @param Domino $domino
+     */
+    public function addToStart(Domino $domino): void
     {
-
+        array_unshift($this->elements, $domino);
     }
 
-    public function merge(DominoCollection $dominoCollection)
+    /**
+     * Add a domino to the end of the collection.
+     *
+     * @param Domino $domino
+     */
+    public function addToEnd(Domino $domino): void
     {
-
+        $this->elements[] = $domino;
     }
 }

@@ -11,6 +11,22 @@ namespace Arp\DominoGame\Value;
 class PlayerCollection extends AbstractCollection
 {
     /**
+     * Check if we have any players in the collection who have 0 pieces remaining (the winner).
+     *
+     * @return bool
+     */
+    public function hasWinner(): bool
+    {
+        /** @var PlayerInterface $element */
+        foreach ($this->elements as $element) {
+            if (0 === $element->getHandCount()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * @return PlayerCollection
      */
     public function getOrderedByLowestCount(): PlayerCollection
@@ -24,6 +40,23 @@ class PlayerCollection extends AbstractCollection
             }
         );
 
-        return new PlayerCollection($elements);
+        return new static($elements);
+    }
+
+    /**
+     * @return PlayerCollection
+     */
+    public function getOrderedByHighestDouble(): PlayerCollection
+    {
+        $elements = $this->elements;
+
+        usort(
+            $elements,
+            static function (PlayerInterface $playerA, PlayerInterface $playerB): int {
+                return $playerA->getHighestDouble() <=> $playerB->getHighestDouble();
+            }
+        );
+
+        return new static($elements);
     }
 }

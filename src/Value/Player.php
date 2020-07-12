@@ -64,4 +64,34 @@ final class Player implements PlayerInterface
     {
         $this->hand->add($domino);
     }
+
+    /**
+     * Find and return the domino that has the highest double in the hand. If there are no doubles then null is
+     * returned.
+     *
+     * @return Domino|null
+     */
+    public function getHighestDouble(): ?Domino
+    {
+        if (0 === $this->hand->count()) {
+            return null;
+        }
+
+        $hand = $this->hand->getElements();
+        usort(
+            $hand,
+            static function (Domino $a, Domino $b) {
+                if ($a->isDouble() && !$b->isDouble()) {
+                    return 1;
+                }
+                if (!$a->isDouble() && $b->isDouble()) {
+                    return 0;
+                }
+                return $a->getValue() <=> $b->getValue();
+            }
+        );
+
+        return $hand[0] ?? null;
+    }
+
 }
