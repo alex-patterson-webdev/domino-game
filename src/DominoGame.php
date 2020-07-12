@@ -9,8 +9,8 @@ use Arp\DominoGame\Exception\InvalidArgumentException;
 use Arp\DominoGame\Value\Board;
 use Arp\DominoGame\Value\Domino;
 use Arp\DominoGame\Value\DominoCollection;
+use Arp\DominoGame\Value\Player;
 use Arp\DominoGame\Value\PlayerCollection;
-use Arp\DominoGame\Value\PlayerInterface;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -27,7 +27,7 @@ final class DominoGame
     /**
      * Collection of all the players playing the game.
      *
-     * @var PlayerCollection|PlayerInterface[]
+     * @var PlayerCollection|Player[]
      */
     private PlayerCollection $players;
 
@@ -114,12 +114,12 @@ final class DominoGame
     /**
      * Run the game and return the winner.
      *
-     * @return PlayerInterface
+     * @return Player
      *
      * @throws DominoGameException
      * @throws InvalidArgumentException
      */
-    public function run(): ?PlayerInterface
+    public function run(): ?Player
     {
         $player = null;
 
@@ -134,12 +134,12 @@ final class DominoGame
      * Each player executes a single turn. The first placement on the board will require the
      * player with the highest double to place a single piece.
      *
-     * @return PlayerInterface|null
+     * @return Player|null
      *
      * @throws InvalidArgumentException
      * @throws DominoGameException
      */
-    private function takeTurns(): ?PlayerInterface
+    private function takeTurns(): ?Player
     {
         $players = $this->board->isEmpty()
             ? $this->players->getOrderedByHighestDouble()
@@ -164,14 +164,14 @@ final class DominoGame
     /**
      * Perform a single turn for the provided player.
      *
-     * @param PlayerInterface $player
+     * @param Player $player
      *
-     * @return PlayerInterface|null
+     * @return Player|null
      *
      * @throws DominoGameException
      * @throws InvalidArgumentException
      */
-    private function takeTurn(PlayerInterface $player): ?PlayerInterface
+    private function takeTurn(Player $player): ?Player
     {
         $this->logger->info(sprintf('Player %s is taking a turn', (string)$player));
 
@@ -199,7 +199,7 @@ final class DominoGame
     /**
      * Reset the game scores to zero and prepare a new boneyard so a new game can be played.
      *
-     * @param PlayerCollection|PlayerInterface[] $players
+     * @param PlayerCollection|Player[] $players
      * @param int                                $maxTileSize
      *
      * @throws DominoGameException If the game cannot be reset

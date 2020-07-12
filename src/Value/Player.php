@@ -10,7 +10,7 @@ use Arp\DominoGame\Exception\DominoGameException;
  * @author  Alex Patterson <alex.patterson.webdev@gmail.com>
  * @package Arp\DominoGame\Value
  */
-final class Player implements PlayerInterface
+class Player
 {
     /**
      * @var string

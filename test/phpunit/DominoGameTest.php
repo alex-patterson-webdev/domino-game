@@ -9,7 +9,6 @@ use Arp\DominoGame\Exception\DominoGameException;
 use Arp\DominoGame\Value\DominoCollection;
 use Arp\DominoGame\Value\Player;
 use Arp\DominoGame\Value\PlayerCollection;
-use Arp\DominoGame\Value\PlayerInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
@@ -242,7 +241,7 @@ final class DominoGameTest extends TestCase
 
         $this->assertSame($expectedDeckCount, $deckResult->count());
 
-        /** @var PlayerInterface $player */
+        /** @var Player $player */
         foreach ($playersResult as $player) {
             $this->assertSame(7, $player->getHandCount());
         }
@@ -265,14 +264,14 @@ final class DominoGameTest extends TestCase
      *
      * @param int $numberOfPlayers
      *
-     * @return PlayerInterface[]|MockObject[]
+     * @return Player[]|MockObject[]
      */
     private function createMockPlayersArray(int $numberOfPlayers): array
     {
-        /** @var PlayerInterface[]|MockObject $players */
+        /** @var Player[]|MockObject $players */
         $players = [];
         for ($x = 0; $x < $numberOfPlayers; $x++) {
-            $players[] = $this->getMockForAbstractClass(PlayerInterface::class);
+            $players[] = $this->createMock(Player::class);
         }
         return $players;
     }

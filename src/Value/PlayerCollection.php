@@ -23,7 +23,7 @@ class PlayerCollection extends AbstractCollection
 
         usort(
             $elements,
-            static function (PlayerInterface $playerA, PlayerInterface $playerB): int {
+            static function (Player $playerA, Player $playerB): int {
                 return $playerA->getHandCount() <=> $playerB->getHandCount();
             }
         );
@@ -42,8 +42,23 @@ class PlayerCollection extends AbstractCollection
 
         usort(
             $elements,
-            static function (PlayerInterface $playerA, PlayerInterface $playerB): int {
-                return $playerA->getHighestDouble() <=> $playerB->getHighestDouble();
+            static function (Player $playerA, Player $playerB): int {
+                $doubleA = $playerA->getHighestDouble();
+                $doubleB = $playerB->getHighestDouble();
+
+                if (null === $doubleA && null === $doubleB) {
+                    return 0;
+                }
+
+                if ((null !== $doubleA) && $doubleA->isDouble() && (null === $doubleB || !$doubleB->isDouble())) {
+                    return 1;
+                }
+
+                if ((null !== $doubleB) && $doubleB->isDouble() && (null === $doubleA || !$doubleA->isDouble())) {
+                    return 0;
+                }
+
+                return $doubleA->getTopTile() <=> $doubleB->getTopTile();
             }
         );
 
@@ -53,22 +68,22 @@ class PlayerCollection extends AbstractCollection
     /**
      * Return the player with the lowest valued sum of all tiles in their hand.
      *
-     * @return PlayerInterface
+     * @return Player
      *
      * @throws DominoGameException If the collection is empty
      */
-    public function getWithLowestHandValue(): PlayerInterface
+    public function getWithLowestHandValue(): Player
     {
         $elements = $this->elements;
 
         usort(
             $elements,
-            static function (PlayerInterface $playerA, PlayerInterface $playerB): int {
+            static function (Player $playerA, Player $playerB): int {
                 return $playerA->getHandValue() <=> $playerB->getHandValue();
             }
         );
 
-        /** @var PlayerInterface $player */
+        /** @var Player $player */
         $player = (new static($elements))->first();
 
         if (null === $player) {
