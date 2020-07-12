@@ -48,14 +48,6 @@ class Player
     }
 
     /**
-     * @param DominoCollection $hand
-     */
-    public function setHand(DominoCollection $hand): void
-    {
-        $this->hand = $hand;
-    }
-
-    /**
      * @return int
      */
     public function getHandCount(): int
@@ -121,12 +113,12 @@ class Player
             $hand,
             static function (Domino $a, Domino $b) {
                 if ($a->isDouble() && !$b->isDouble()) {
-                    return 1;
-                }
-                if (!$a->isDouble() && $b->isDouble()) {
                     return 0;
                 }
-                return $a->getValue() <=> $b->getValue();
+                if (!$a->isDouble() && $b->isDouble()) {
+                    return 1;
+                }
+                return $b->getValue() <=> $a->getValue();
             }
         );
 

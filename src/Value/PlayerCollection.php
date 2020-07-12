@@ -51,14 +51,14 @@ class PlayerCollection extends AbstractCollection
                 }
 
                 if ((null !== $doubleA) && $doubleA->isDouble() && (null === $doubleB || !$doubleB->isDouble())) {
-                    return 1;
-                }
-
-                if ((null !== $doubleB) && $doubleB->isDouble() && (null === $doubleA || !$doubleA->isDouble())) {
                     return 0;
                 }
 
-                return $doubleA->getTopTile() <=> $doubleB->getTopTile();
+                if ((null !== $doubleB) && $doubleB->isDouble() && (null === $doubleA || !$doubleA->isDouble())) {
+                    return 1;
+                }
+
+                return $doubleB->getValue() <=> $doubleA->getValue();
             }
         );
 
