@@ -69,7 +69,8 @@ class BoardTest extends TestCase
         /** @var Domino|MockObject $domino */
         $domino = $this->createDominoMock(5, 5);
 
-        $this->assertTrue($board->place($domino));
+        $board->place($domino);
+
         $this->assertSame($domino, $board->getPlaced()->first());
     }
 
@@ -92,7 +93,7 @@ class BoardTest extends TestCase
         /** @var Domino|MockObject $domino */
         $domino = $this->createDominoMock(5, 5);
 
-        $this->assertTrue($board->place($domino));
+        $board->place($domino);
 
         $this->assertSame($domino, $board->getLeft());
         $this->assertSame($domino, $board->getRight());
@@ -115,7 +116,7 @@ class BoardTest extends TestCase
 
         $firstDomino = $this->createDominoMock(1, 1);
 
-        $this->assertTrue($board->place($firstDomino));
+        $board->place($firstDomino);
 
         $nonMatchDomino = $this->createDominoMock(2, 2);
 
@@ -159,12 +160,12 @@ class BoardTest extends TestCase
 
         // We need to first make the collection non-empty
         $firstDomino = $this->createDominoMock($start, $start);
-        $this->assertTrue($board->place($firstDomino));
+        $board->place($firstDomino);
 
         // We expect to add this to the left of the placed dominoes...
         $leftPlaceDomino = $this->createDominoMock($top, $bottom);
 
-        $placeResult = $board->place($leftPlaceDomino);
+        $board->place($leftPlaceDomino);
 
         $leftTile = $board->getLeftTile();
         if ($top === $start) {
@@ -175,7 +176,6 @@ class BoardTest extends TestCase
             $this->fail(sprintf('The $start value \'%d\' should match either $top or $bottom', $start));
         }
 
-        $this->assertTrue($placeResult);
         $this->assertSame($board->getLeft(), $leftPlaceDomino);
     }
 

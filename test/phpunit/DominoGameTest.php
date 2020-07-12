@@ -12,6 +12,7 @@ use Arp\DominoGame\Value\PlayerCollection;
 use Arp\DominoGame\Value\PlayerInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LoggerInterface;
 
 /**
  * @author  Alex Patterson <alex.patterson.webdev@gmail.com>
@@ -25,11 +26,18 @@ final class DominoGameTest extends TestCase
     private $players;
 
     /**
+     * @var LoggerInterface|MockObject
+     */
+    private $logger;
+
+    /**
      * Prepare the test case dependencies
      */
     public function setUp(): void
     {
         $this->players = $this->createMock(PlayerCollection::class);
+
+        $this->logger = $this->createMock(LoggerInterface::class);
     }
 
     /**
@@ -56,7 +64,7 @@ final class DominoGameTest extends TestCase
             sprintf('There must be a minimum of 1 and a maximum of 4 players; %d provided', $playerCount)
         );
 
-        new DominoGame($this->players, 6);
+        new DominoGame($this->players, $this->logger, 6);
     }
 
     /**
@@ -108,7 +116,7 @@ final class DominoGameTest extends TestCase
                 ->with(null);
         }
 
-        $game = new DominoGame($playersCollection, $maxTileSize);
+        $game = new DominoGame($playersCollection, $this->logger, $maxTileSize);
 
         $this->assertSame($expectedCount, $game->getDeck()->count());
     }
@@ -138,7 +146,7 @@ final class DominoGameTest extends TestCase
         $players = $this->createMockPlayersArray(2);
         $playersCollection = $this->createMockPlayersCollection($players);
 
-         $game = new DominoGame($playersCollection, 6);
+         $game = new DominoGame($playersCollection, $this->logger, 6);
 
          $this->expectException(DominoGameException::class);
          $this->expectExceptionMessage('Hand sizes must be a minimum of 1');
@@ -174,7 +182,7 @@ final class DominoGameTest extends TestCase
         $players = $this->createMockPlayersArray(2);
         $collection = $this->createMockPlayersCollection($players);
 
-        $game = new DominoGame($collection, 6);
+        $game = new DominoGame($collection, $this->logger, 6);
 
         $expectedDeckCount = 28;
 
@@ -220,10 +228,10 @@ final class DominoGameTest extends TestCase
 
         $players = [];
         for ($x = 0; $x < $playerCount; $x++) {
-            $players[] = new Player();
+            $players[] = new Player('Player ' . $x);
         }
 
-        $game = new DominoGame(new PlayerCollection($players), 6);
+        $game = new DominoGame(new PlayerCollection($players), $this->logger, 6);
 
         $game->deal($handSize);
 

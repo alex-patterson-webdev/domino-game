@@ -11,6 +11,7 @@ use Arp\DominoGame\Value\Domino;
 use Arp\DominoGame\Value\DominoCollection;
 use Arp\DominoGame\Value\PlayerCollection;
 use Arp\DominoGame\Value\PlayerInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * @author  Alex Patterson <alex.patterson.webdev@gmail.com>
@@ -38,13 +39,22 @@ final class DominoGame
     private DominoCollection $deck;
 
     /**
+     * A PSR logger that will record the game actions
+     *
+     * @var LoggerInterface
+     */
+    private LoggerInterface $logger;
+
+    /**
      * @param PlayerCollection $players
+     * @param LoggerInterface  $logger
      * @param int              $maxTileSize
      *
      * @throws DominoGameException If the game cannot be created
      */
-    public function __construct(PlayerCollection $players, int $maxTileSize)
+    public function __construct(PlayerCollection $players, LoggerInterface $logger, int $maxTileSize)
     {
+        $this->logger = $logger;
         $this->board = new Board();
 
         $this->reset($players, $maxTileSize);
@@ -64,7 +74,9 @@ final class DominoGame
         }
 
         $deckCount = $this->deck->count();
-        if ($deckCount < ($handSize * $this->players->count())) {
+        $playerCount = $this->players->count();
+
+        if ($deckCount < ($handSize * $playerCount)) {
             throw new DominoGameException(
                 sprintf(
                     'The hand size %d exceeds the maximum permissible for current deck size of %d',
@@ -74,13 +86,24 @@ final class DominoGame
             );
         }
 
+        $this->logger->info(
+            sprintf('Dealing a hand size of %d dominoes to %d players', $handSize, $playerCount)
+        );
+
         // Ensure that we randomise the deck before dealing a domino to each player in turn
         $this->deck->shuffle();
+        $this->logger->info(sprintf('Deck shuffled: %s', (string)$this->deck));
+
         foreach ($this->deck as $domino) {
             foreach ($this->players->getOrderedByLowestCount() as $player) {
                 if ($player->getHandCount() < $handSize) {
                     $player->addToHand($domino);
                     $this->deck->removeElement($domino);
+
+                    $this->logger->info(
+                        sprintf('Dealt domino %s to player %s', (string)$domino, (string)$player)
+                    );
+
                     // Move on to next domino
                     continue 2;
                 }
@@ -123,24 +146,15 @@ final class DominoGame
             : $this->players;
 
         foreach ($players as $player) {
-            $matchingDomino = $player->getDominoWithMatchingTile($this->board);
+            $winner = $this->takeTurn($player);
 
-            if (null === $matchingDomino) {
-                // If there are no more dominoes to pick, we need to resolve the winner
-                if ($this->deck->isEmpty()) {
-                    return $players->getWithLowestHandValue();
-                }
-                // We could not find a matching tile to place so we have to pick up another
-                $this->pickFromDeck($player);
-                continue;
+            if (null === $winner && 0 === $player->getHandCount()) {
+                $winner = $player;
             }
 
-            if (null !== $matchingDomino && $this->board->place($matchingDomino)) {
-                $player->removeFromHand($matchingDomino);
-
-                if (0 === $player->getHandCount()) {
-                    return $player;
-                }
+            if (null !== $winner) {
+                $this->logger->info(sprintf('Player %s is the winner', (string)$player));
+                return $winner;
             }
         }
 
@@ -148,21 +162,38 @@ final class DominoGame
     }
 
     /**
-     * Pick up a tile from the deck and add it to the players hand.
+     * Perform a single turn for the provided player.
      *
-     * @param PlayerInterface $player The player who is picking up a domino.
+     * @param PlayerInterface $player
      *
-     * @throws DominoGameException If the deck is empty
+     * @return PlayerInterface|null
+     *
+     * @throws DominoGameException
+     * @throws InvalidArgumentException
      */
-    private function pickFromDeck(PlayerInterface $player): void
+    private function takeTurn(PlayerInterface $player): ?PlayerInterface
     {
-        if ($this->deck->isEmpty()) {
-            throw new DominoGameException(
-                sprintf('%s cannot pick tiles from an empty table', $player->getName())
-            );
+        $this->logger->info(sprintf('Player %s is taking a turn', (string)$player));
+
+        $domino = $player->getDominoWithMatchingTile($this->board);
+        if (null === $domino) {
+            $this->logger->info(sprintf('Player %s was unable to find a matching domino', (string)$player));
+
+            // If there are no more dominoes to pick, we need to resolve the winner
+            if ($this->deck->isEmpty()) {
+                return $this->players->getWithLowestHandValue();
+            }
+            // We could not find a matching tile to place so we have to pick up another
+            $this->logger->info(sprintf('Player %s has picked a new domino from the deck', (string)$player));
+            $player->addToHand($this->deck->pickRandom());
+            return null;
         }
 
-        $player->addToHand($this->deck->pickRandom());
+        $this->logger->info(sprintf('Player %s has placed domino %s', (string)$player, (string)$domino));
+        $this->board->place($domino);
+        $player->removeFromHand($domino);
+
+        return null;
     }
 
     /**
@@ -183,6 +214,7 @@ final class DominoGame
             );
         }
 
+        $this->logger->info('Resetting game');
         foreach ($players as $player) {
             $player->getHand()->removeElements(null);
         }

@@ -21,7 +21,7 @@ final class PlayerTest extends TestCase
      */
     public function testImplementsPlayerInterface(): void
     {
-        $player = new Player();
+        $player = new Player('Fred');
 
         $this->assertInstanceOf(PlayerInterface::class, $player);
     }
@@ -33,7 +33,7 @@ final class PlayerTest extends TestCase
      */
     public function testPlayerStartsWithAnEmptyHand(): void
     {
-        $player = new Player();
+        $player = new Player('Bob');
 
         $this->assertSame(0, $player->getHand()->count());
     }

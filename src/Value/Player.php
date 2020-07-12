@@ -22,9 +22,13 @@ final class Player implements PlayerInterface
      */
     private DominoCollection $hand;
 
-    public function __construct()
+    /**
+     * @param string $name
+     */
+    public function __construct(string $name)
     {
-        $this->hand = new DominoCollection([]);
+        $this->name = $name;
+        $this->hand = new DominoCollection();
     }
 
     /**
@@ -183,5 +187,13 @@ final class Player implements PlayerInterface
         $mergedCollection = $matchesLeft->createMergedCollection($matchesRight);
 
         return $mergedCollection->getDominoWithHighestValue();
+    }
+
+    /**
+     * @return string
+     */
+    public function __toString(): string
+    {
+        return $this->getName();
     }
 }

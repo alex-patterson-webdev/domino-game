@@ -66,11 +66,9 @@ class Board
      *
      * @param Domino $domino
      *
-     * @return bool
-     *
      * @throws InvalidArgumentException If the provided domino is invalid
      */
-    public function place(Domino $domino): bool
+    public function place(Domino $domino): void
     {
         // If there is no virtual domino we can directly add to the board as it is our first piece.
         if (0 === $this->placed->count()) {
@@ -81,22 +79,22 @@ class Board
             }
             $this->placed->addToStart($domino);
             $this->virtualDomino = new Domino($domino->getTopTile(), $domino->getBottomTile());
-            return true;
+            return;
         }
 
         $leftTile = $this->virtualDomino->getTopTile();
         $rightTile = $this->virtualDomino->getBottomTile();
 
         if ($leftTile > $rightTile && $this->placeLeft($domino)) {
-            return true;
+            return;
         }
 
         if ($rightTile > $leftTile && $this->placeRight($domino)) {
-            return true;
+            return;
         }
 
         if ($this->placeLeft($domino) || $this->placeRight($domino)) {
-            return true;
+            return;
         }
 
         throw new InvalidArgumentException(

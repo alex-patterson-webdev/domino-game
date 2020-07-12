@@ -189,4 +189,20 @@ class DominoCollection extends AbstractCollection
 
         return $domino;
     }
+
+    /**
+     * Return the collection represented as a string.
+     *
+     * @return string
+     */
+    public function __toString()
+    {
+        $string = '';
+
+        foreach ($this->elements as $element) {
+            $string .= $element . ' ';
+        }
+
+        return trim($string);
+    }
 }
