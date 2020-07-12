@@ -74,6 +74,17 @@ class Board
             return true;
         }
 
+        $leftTile = $this->virtualDomino->getTopTile();
+        $rightTile = $this->virtualDomino->getBottomTile();
+
+        if ($leftTile > $rightTile && $this->placeLeft($domino)) {
+            return true;
+        }
+
+        if ($rightTile > $leftTile && $this->placeRight($domino)) {
+            return true;
+        }
+
         if ($this->placeLeft($domino) || $this->placeRight($domino)) {
             return true;
         }
@@ -91,7 +102,7 @@ class Board
      */
     private function placeLeft(Domino $domino): bool
     {
-        $leftTitle = $this->virtualDomino->getTopTile();     // Represents left placement
+        $leftTitle = $this->virtualDomino->getTopTile();    // Represents left placement
         $rightTile = $this->virtualDomino->getBottomTile(); // Represents right placement
 
         // Does the top tile match the left side of the placed pieces?
@@ -122,7 +133,7 @@ class Board
     private function placeRight(Domino $domino): bool
     {
         $rightTile = $this->virtualDomino->getBottomTile(); // Represents right placement
-        $leftTitle = $this->virtualDomino->getTopTile();     // Represents left placement
+        $leftTitle = $this->virtualDomino->getTopTile();    // Represents left placement
 
         // Does the top tile match the right side of the placed pieces?
         if ($domino->getTopTile() === $rightTile) {
@@ -170,10 +181,7 @@ class Board
      */
     public function getLeftTile(): ?int
     {
-        /** @var Domino|null $left */
-        $left = $this->placed->first();
-
-        return (null === $left) ? null : $left->getTopTile();
+        return isset($this->virtualDomino) ? $this->virtualDomino->getTopTile() : null;
     }
 
     /**
@@ -197,9 +205,6 @@ class Board
      */
     public function getRightTile(): ?int
     {
-        /** @var Domino|null $right */
-        $right = $this->placed->last();
-
-        return (null === $right) ? null : $right->getBottomTile();
+        return isset($this->virtualDomino) ? $this->virtualDomino->getBottomTile() : null;
     }
 }

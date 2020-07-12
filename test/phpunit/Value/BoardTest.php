@@ -78,7 +78,11 @@ class BoardTest extends TestCase
      *
      * @covers \Arp\DominoGame\Value\Board::place
      * @covers \Arp\DominoGame\Value\Board::getRight
+     * @covers \Arp\DominoGame\Value\Board::getRightTile
      * @covers \Arp\DominoGame\Value\Board::getLeft
+     * @covers \Arp\DominoGame\Value\Board::getLeftTile
+     *
+     * @throws DominoGameException
      */
     public function testGetLeftAndGetRightValuesAreCorrectForFirstPlacedPiece(): void
     {
@@ -91,6 +95,9 @@ class BoardTest extends TestCase
 
         $this->assertSame($domino, $board->getLeft());
         $this->assertSame($domino, $board->getRight());
+
+        $this->assertSame(5, $board->getLeftTile());
+        $this->assertSame(5, $board->getRightTile());
     }
 
     /**
@@ -98,6 +105,8 @@ class BoardTest extends TestCase
      * is returned from place().
      *
      * @covers \Arp\DominoGame\Value\Board::place
+     *
+     * @throws DominoGameException
      */
     public function testPlacementOfNonMatchingPieceReturnsFalse(): void
     {
@@ -110,6 +119,33 @@ class BoardTest extends TestCase
         $nonMatchDomino = $this->createDominoMock(2, 2);
 
         $this->assertFalse($board->place($nonMatchDomino));
+    }
+
+    /**
+     * Assert that when we call place() on a non-empty board we expect the provided domino to be added to the top/left.
+     *
+     * @covers \Arp\DominoGame\Value\Board::place
+     * @covers \Arp\DominoGame\Value\Board::placeLeft
+     *
+     * @throws DominoGameException
+     */
+    public function testLeftPlacedDominoIsAddedToTheBeginningOfANonEmptyDominoCollection(): void
+    {
+        $board = new Board();
+
+        // We need to first make the collection non-empty
+        $firstDomino = $this->createDominoMock(3, 3);
+        $this->assertTrue($board->place($firstDomino));
+
+        // We expect to add this to the left of the placed dominoes...
+        $leftPlaceDomino = $this->createDominoMock(3, 2);
+
+        $this->assertTrue($board->place($leftPlaceDomino));
+
+        $this->assertSame($board->getLeft(), $leftPlaceDomino);
+
+        // We would have flipped the value to match on the 3, so 2 should now be exposed...
+        $this->assertSame($board->getLeftTile(), 2);
     }
 
     /**
