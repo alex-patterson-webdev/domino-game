@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Arp\DominoGame;
 
 use Arp\DominoGame\Exception\DominoGameException;
+use Arp\DominoGame\Value\Board;
 use Arp\DominoGame\Value\Domino;
 use Arp\DominoGame\Value\DominoCollection;
 use Arp\DominoGame\Value\PlayerCollection;
@@ -16,6 +17,11 @@ use Arp\DominoGame\Value\PlayerInterface;
  */
 final class DominoGame
 {
+    /**
+     * @var Board
+     */
+    private Board $board;
+
     /**
      * Collection of all the players playing the game.
      *
@@ -38,6 +44,8 @@ final class DominoGame
      */
     public function __construct(PlayerCollection $players, int $maxTileSize)
     {
+        $this->board = new Board();
+
         $this->reset($players, $maxTileSize);
     }
 
@@ -65,8 +73,7 @@ final class DominoGame
             );
         }
 
-        // Ensure that we randomise the deck and loop the randomised deck
-        // deal a domino to each player in turn, until they hit their limit
+        // Ensure that we randomise the deck before dealing a domino to each player in turn
         $this->deck->shuffle();
         foreach ($this->deck as $domino) {
             foreach ($this->players->getOrderedByLowestCount() as $player) {
@@ -77,6 +84,18 @@ final class DominoGame
                     continue 2;
                 }
             }
+        }
+    }
+
+    /**
+     * @return PlayerInterface|null
+     */
+    public function play(): ?PlayerInterface
+    {
+        $players = $this->players->getOrderedByHighestDouble();
+
+        while (!$players->hasWinner()) {
+
         }
     }
 
@@ -102,8 +121,8 @@ final class DominoGame
             $player->getHand()->removeElements(null);
         }
 
-        $this->players = $players;
         $this->deck = $this->createDominoCollection($maxTileSize);
+        $this->players = $players;
     }
 
     /**

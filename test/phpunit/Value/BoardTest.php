@@ -124,28 +124,61 @@ class BoardTest extends TestCase
     /**
      * Assert that when we call place() on a non-empty board we expect the provided domino to be added to the top/left.
      *
-     * @covers \Arp\DominoGame\Value\Board::place
-     * @covers \Arp\DominoGame\Value\Board::placeLeft
+     * @param int $start  The starting double that should be placed.
+     * @param int $top    The value of the top tile to place.
+     * @param int $bottom The value of the bottom tile to place.
+     *
+     * @dataProvider getLeftPlacedDominoIsAddedToTheBeginningOfANonEmptyDominoCollectionData
+     *
+     * @covers       \Arp\DominoGame\Value\Board::place
+     * @covers       \Arp\DominoGame\Value\Board::placeLeft
      *
      * @throws DominoGameException
      */
-    public function testLeftPlacedDominoIsAddedToTheBeginningOfANonEmptyDominoCollection(): void
-    {
+    public function testLeftPlacedDominoIsAddedToTheBeginningOfANonEmptyDominoCollection(
+        int $start,
+        int $top,
+        int $bottom
+    ): void {
         $board = new Board();
 
         // We need to first make the collection non-empty
-        $firstDomino = $this->createDominoMock(3, 3);
+        $firstDomino = $this->createDominoMock($start, $start);
         $this->assertTrue($board->place($firstDomino));
 
         // We expect to add this to the left of the placed dominoes...
-        $leftPlaceDomino = $this->createDominoMock(3, 2);
+        $leftPlaceDomino = $this->createDominoMock($top, $bottom);
 
-        $this->assertTrue($board->place($leftPlaceDomino));
+        $placeResult = $board->place($leftPlaceDomino);
 
+        $leftTile = $board->getLeftTile();
+        if ($top === $start) {
+            $this->assertSame($leftTile, $bottom);
+        } elseif ($bottom === $start) {
+            $this->assertSame($leftTile, $top);
+        } else {
+            $this->fail(sprintf('The $start value \'%d\' should match either $top or $bottom', $start));
+        }
+
+        $this->assertTrue($placeResult);
         $this->assertSame($board->getLeft(), $leftPlaceDomino);
+    }
 
-        // We would have flipped the value to match on the 3, so 2 should now be exposed...
-        $this->assertSame($board->getLeftTile(), 2);
+    /**
+     * @return array
+     */
+    public function getLeftPlacedDominoIsAddedToTheBeginningOfANonEmptyDominoCollectionData(): array
+    {
+        return [
+            [5, 5, 3],
+            [5, 3, 5],
+
+            [1, 1, 3],
+            [1, 3, 1],
+
+            [0, 0, 3],
+            [0, 3, 0],
+        ];
     }
 
     /**
