@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Arp\DominoGame\Value;
 
+use Arp\DominoGame\Exception\DominoGameException;
+
 /**
  * Value object that represents the placed dominoes of the game. Internally we manage a collection of dominoes that have
  * been matched by the number of dots on the exposed tile.
@@ -55,11 +57,18 @@ class Board
      * @param Domino $domino
      *
      * @return bool
+     *
+     * @throws DominoGameException If the provided domino is invalid
      */
     public function place(Domino $domino): bool
     {
         // If there is no virtual domino we can directly add to the board as it is our first piece.
-        if (null === $this->virtualDomino) {
+        if (0 === $this->placed->count()) {
+            if (!$domino->isDouble()) {
+                throw new DominoGameException(
+                    sprintf('The first domino place must be a double \'%s\' provided', $domino->getName())
+                );
+            }
             $this->placed->addToStart($domino);
             $this->virtualDomino = new Domino($domino->getTopTile(), $domino->getBottomTile());
             return true;
@@ -130,6 +139,15 @@ class Board
         }
 
         return false;
+    }
+
+    /**
+     * Remove all elements from the board and reset the virtual domino to null.
+     */
+    public function clearBoard(): void
+    {
+        $this->placed->removeElements(null);
+        $this->virtualDomino = null;
     }
 
     /**
