@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Arp\DominoGame\Value;
 
-use Arp\DominoGame\Exception\DominoGameException;
+use Arp\DominoGame\Exception\InvalidArgumentException;
 
 /**
  * Value object that represents the placed dominoes of the game. Internally we manage a collection of dominoes that have
@@ -39,6 +39,16 @@ class Board
     }
 
     /**
+     * Check if the board is empty (zero placed pieces)
+     *
+     * @return bool
+     */
+    public function isEmpty(): bool
+    {
+        return (0 === $this->placed->count());
+    }
+
+    /**
      * Return the placed dominoes collection.
      *
      * @return DominoCollection
@@ -58,14 +68,14 @@ class Board
      *
      * @return bool
      *
-     * @throws DominoGameException If the provided domino is invalid
+     * @throws InvalidArgumentException If the provided domino is invalid
      */
     public function place(Domino $domino): bool
     {
         // If there is no virtual domino we can directly add to the board as it is our first piece.
         if (0 === $this->placed->count()) {
             if (!$domino->isDouble()) {
-                throw new DominoGameException(
+                throw new InvalidArgumentException(
                     sprintf('The first domino place must be a double \'%s\' provided', $domino->getName())
                 );
             }
@@ -89,7 +99,14 @@ class Board
             return true;
         }
 
-        return false;
+        throw new InvalidArgumentException(
+            sprintf(
+                'The domino \'%s\' cannot be placed on the board; tiles must match values \'%d\' or \'%d\'',
+                $domino->getName(),
+                $this->getLeftTile(),
+                $this->getRightTile()
+            )
+        );
     }
 
     /**

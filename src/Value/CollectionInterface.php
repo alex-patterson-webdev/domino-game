@@ -33,4 +33,25 @@ interface CollectionInterface extends \IteratorAggregate, \Countable
      * @return mixed
      */
     public function removeElements(?iterable $elements);
+
+    /**
+     * Return the first element in the collection.
+     *
+     * @return object|null
+     */
+    public function first(): ?object;
+
+    /**
+     * Return the last element in the collection.
+     *
+     * @return object|null
+     */
+    public function last(): ?object;
+
+    /**
+     * Check if the collection is empty or not.
+     *
+     * @return bool
+     */
+    public function isEmpty(): bool;
 }

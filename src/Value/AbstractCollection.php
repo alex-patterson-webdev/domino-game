@@ -63,6 +63,16 @@ abstract class AbstractCollection implements CollectionInterface
     }
 
     /**
+     * Check if the collection is empty or not.
+     *
+     * @return bool
+     */
+    public function isEmpty(): bool
+    {
+        return (0 === $this->count());
+    }
+
+    /**
      * @return int
      */
     public function count(): int
@@ -125,6 +135,21 @@ abstract class AbstractCollection implements CollectionInterface
      */
     public function last(): ?object
     {
-        return $this->elements[count($this->elements)-1] ?? null;
+        return $this->elements[count($this->elements) - 1] ?? null;
+    }
+
+    /**
+     * Create a new collection containing a merged array of the current collection's elements and the
+     * elements provided in $collection.
+     *
+     * @param CollectionInterface $collection
+     *
+     * @return CollectionInterface
+     */
+    public function createMergedCollection(CollectionInterface $collection): CollectionInterface
+    {
+        $elements = array_merge($this->elements, $collection->getElements());
+
+        return new static($elements);
     }
 }
