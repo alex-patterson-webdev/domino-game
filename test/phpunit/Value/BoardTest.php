@@ -2,9 +2,10 @@
 
 declare(strict_types=1);
 
-namespace ArpTest\Value\PlayerTest;
+namespace ArpTest\DominoGame\Value;
 
 use Arp\DominoGame\Exception\DominoGameException;
+use Arp\DominoGame\Exception\InvalidArgumentException;
 use Arp\DominoGame\Value\Board;
 use Arp\DominoGame\Value\Domino;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -101,14 +102,14 @@ class BoardTest extends TestCase
     }
 
     /**
-     * Assert that if we attempt to place a domino to the board that doesn't match an exposed tile then FALSE
-     * is returned from place().
+     * Assert that if we attempt to place() a domino to the board that doesn't match an exposed tile then a new
+     * DominoGameException is thrown.
      *
      * @covers \Arp\DominoGame\Value\Board::place
      *
      * @throws DominoGameException
      */
-    public function testPlacementOfNonMatchingPieceReturnsFalse(): void
+    public function testPlacementOfNonMatchingPieceThrowsInvalidArgumentException(): void
     {
         $board = new Board();
 
@@ -118,7 +119,21 @@ class BoardTest extends TestCase
 
         $nonMatchDomino = $this->createDominoMock(2, 2);
 
-        $this->assertFalse($board->place($nonMatchDomino));
+        $nonMatchDomino->expects($this->once())
+            ->method('getName')
+            ->willReturn('2-2');
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage(
+            sprintf(
+                'The domino \'%s\' cannot be placed on the board; tiles must match values \'%d\' or \'%d\'',
+                '2-2',
+                1,
+                1
+            )
+        );
+
+        $board->place($nonMatchDomino);
     }
 
     /**

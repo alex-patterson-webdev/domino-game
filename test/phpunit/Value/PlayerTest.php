@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace ArpTest\Value\PlayerTest;
+namespace ArpTest\DominoGame\Value;
 
 use Arp\DominoGame\Value\Player;
 use Arp\DominoGame\Value\PlayerInterface;
