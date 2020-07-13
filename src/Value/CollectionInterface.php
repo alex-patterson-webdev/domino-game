@@ -54,4 +54,11 @@ interface CollectionInterface extends \IteratorAggregate, \Countable
      * @return bool
      */
     public function isEmpty(): bool;
+
+    /**
+     * @param CollectionInterface $collection
+     *
+     * @return CollectionInterface
+     */
+    public function createMergedCollection(CollectionInterface $collection): CollectionInterface;
 }

@@ -72,7 +72,7 @@ class Board
     {
         // If there is no virtual domino we can directly add to the board as it is our first piece.
         if (0 === $this->placed->count()) {
-            if (!$domino->isDouble()) {
+            if (! $domino->isDouble()) {
                 throw new InvalidArgumentException(
                     sprintf('The first domino place must be a double \'%s\' provided', $domino->getName())
                 );
@@ -82,18 +82,15 @@ class Board
             return;
         }
 
-        $leftTile = $this->virtualDomino->getTopTile();
-        $rightTile = $this->virtualDomino->getBottomTile();
-
-        if ($leftTile > $rightTile && $this->placeLeft($domino)) {
+        $left = $this->virtualDomino->getTopTile();
+        if ($left === $domino->getTopTile() || $left === $domino->getBottomTile()) {
+            $this->placeLeft($domino);
             return;
         }
 
-        if ($rightTile > $leftTile && $this->placeRight($domino)) {
-            return;
-        }
-
-        if ($this->placeLeft($domino) || $this->placeRight($domino)) {
+        $right = $this->virtualDomino->getBottomTile();
+        if ($right === $domino->getBottomTile() || $right === $domino->getTopTile()) {
+            $this->placeRight($domino);
             return;
         }
 
@@ -112,10 +109,8 @@ class Board
      * both ways so we should check both ways before updating the board.
      *
      * @param Domino $domino The domino that is being placed.
-     *
-     * @return bool
      */
-    private function placeLeft(Domino $domino): bool
+    private function placeLeft(Domino $domino): void
     {
         $leftTitle = $this->virtualDomino->getTopTile();    // Represents left placement
         $rightTile = $this->virtualDomino->getBottomTile(); // Represents right placement
@@ -124,17 +119,15 @@ class Board
         if ($domino->getTopTile() === $leftTitle) {
             $this->placed->addToStart($domino);
             $this->virtualDomino = new Domino($domino->getBottomTile(), $rightTile);
-            return true;
+            return;
         }
 
         // Does the bottom tile match the left side of the placed pieces?
         if ($domino->getBottomTile() === $leftTitle) {
             $this->placed->addToStart($domino);
             $this->virtualDomino = new Domino($domino->getTopTile(), $rightTile);
-            return true;
+            return;
         }
-
-        return false;
     }
 
     /**
@@ -142,10 +135,8 @@ class Board
      * both ways so we should check both ways before updating the board.
      *
      * @param Domino $domino The domino that is being placed.
-     *
-     * @return bool
      */
-    private function placeRight(Domino $domino): bool
+    private function placeRight(Domino $domino): void
     {
         $rightTile = $this->virtualDomino->getBottomTile(); // Represents right placement
         $leftTitle = $this->virtualDomino->getTopTile();    // Represents left placement
@@ -154,17 +145,15 @@ class Board
         if ($domino->getTopTile() === $rightTile) {
             $this->placed->addToEnd($domino);
             $this->virtualDomino = new Domino($leftTitle, $domino->getBottomTile());
-            return true;
+            return;
         }
 
         // Does the bottom tile match the right side of the placed pieces?
         if ($domino->getBottomTile() === $rightTile) {
             $this->placed->addToEnd($domino);
             $this->virtualDomino = new Domino($leftTitle, $domino->getTopTile());
-            return true;
+            return;
         }
-
-        return false;
     }
 
     /**

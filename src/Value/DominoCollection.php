@@ -13,27 +13,6 @@ use Arp\DominoGame\Exception\DominoGameException;
 class DominoCollection extends AbstractCollection
 {
     /**
-     * Return the domino matching the provided left and right dot values.
-     *
-     * @param int $topTile
-     * @param int $bottomTile
-     *
-     * @return Domino|null
-     */
-    public function get(int $topTile, int $bottomTile): ?Domino
-    {
-        /** @var Domino $domino */
-        foreach ($this->elements as $domino) {
-            if ($domino->isTileMatch($topTile, $bottomTile)) {
-                return $domino;
-            }
-        }
-
-        // @todo Consider if this is acceptable
-        return null;
-    }
-
-    /**
      * @param Domino $domino
      *
      * @return bool
@@ -174,7 +153,8 @@ class DominoCollection extends AbstractCollection
         }
 
         try {
-            $domino = $this->elements[random_int(0, count($this->elements) - 1)];
+            $values = array_values($this->elements);
+            $domino = $values[random_int(0, count($values) - 1)];
         } catch (\Throwable $e) {
             throw new DominoGameException(
                 sprintf('Failed to pick a random domino from the collection: %s', $e->getMessage()),

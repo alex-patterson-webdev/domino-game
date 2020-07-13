@@ -6,7 +6,6 @@ namespace ArpTest\DominoGame\Value;
 
 use Arp\DominoGame\Value\Domino;
 use Arp\DominoGame\Value\Player;
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -36,41 +35,19 @@ final class PlayerTest extends TestCase
     {
         $player = new Player('Fred');
 
-        $highestDouble = $this->createDominoMock(6, 6);
+        $highestDouble = new Domino(6, 6);
 
-        $player->addToHand($this->createDominoMock(1, 2));
-        $player->addToHand($this->createDominoMock(3, 3));
-        $player->addToHand($this->createDominoMock(1, 1));
+        $player->addToHand(new Domino(1, 2));
+        $player->addToHand(new Domino(3, 3));
+        $player->addToHand(new Domino(1, 1));
         $player->addToHand($highestDouble);
-        $player->addToHand($this->createDominoMock(1, 2));
-        $player->addToHand($this->createDominoMock(4, 2));
-        $player->addToHand($this->createDominoMock(5, 3));
-        $player->addToHand($this->createDominoMock(1, 2));
+        $player->addToHand(new Domino(1, 2));
+        $player->addToHand(new Domino(4, 2));
+        $player->addToHand(new Domino(5, 3));
+        $player->addToHand(new Domino(1, 2));
 
         $result = $player->getHighestDouble();
 
         $this->assertSame($highestDouble, $result);
-    }
-
-    /**
-     * Create a new mocked Domino instance.
-     *
-     * @param int $top
-     * @param int $bottom
-     *
-     * @return Domino|MockObject
-     */
-    private function createDominoMock(int $top, int $bottom): Domino
-    {
-        return new Domino($top, $bottom);
-
-        /** @var Domino|MockObject $domino */
-//        $domino = $this->createMock(Domino::class);
-//
-//        $domino->method('getTopTile')->willReturn($top);
-//        $domino->method('getBottomTile')->willReturn($bottom);
-//        $domino->method('isDouble')->willReturn($top === $bottom);
-
-        return $domino;
     }
 }

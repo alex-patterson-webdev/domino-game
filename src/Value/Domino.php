@@ -79,39 +79,6 @@ class Domino
     }
 
     /**
-     * Check if both provided $topTitle and $bottomTile values match the current domino values.
-     *
-     * @param int $topTitle
-     * @param int $bottomTile
-     *
-     * @return bool
-     */
-    public function isTileMatch(int $topTitle, int $bottomTile): bool
-    {
-        return $this->isTopTileMatch($topTitle) && $this->isBottomTitleMatch($bottomTile);
-    }
-
-    /**
-     * @param int $topTitle
-     *
-     * @return bool
-     */
-    public function isTopTileMatch(int $topTitle): bool
-    {
-        return $this->topTile === $topTitle;
-    }
-
-    /**
-     * @param int $bottomTile
-     *
-     * @return bool
-     */
-    public function isBottomTitleMatch(int $bottomTile): bool
-    {
-        return $this->bottomTile === $bottomTile;
-    }
-
-    /**
      * @return string
      */
     public function __toString()

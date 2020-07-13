@@ -159,12 +159,11 @@ class BoardTest extends TestCase
         $board = new Board();
 
         // We need to first make the collection non-empty
-        $firstDomino = $this->createDominoMock($start, $start);
+        $firstDomino = new Domino($start, $start);
         $board->place($firstDomino);
 
         // We expect to add this to the left of the placed dominoes...
-        $leftPlaceDomino = $this->createDominoMock($top, $bottom);
-
+        $leftPlaceDomino = new Domino($top, $bottom);
         $board->place($leftPlaceDomino);
 
         $leftTile = $board->getLeftTile();
@@ -194,6 +193,38 @@ class BoardTest extends TestCase
             [0, 0, 3],
             [0, 3, 0],
         ];
+    }
+
+    /**
+     * Assert that we can place matching tiles to the 'right' of the collection.
+     *
+     * @covers \Arp\DominoGame\Value\Board::place
+     * @covers \Arp\DominoGame\Value\Board::placeRight
+     *
+     * @throws InvalidArgumentException
+     */
+    public function testPlaceRightTileWithNonEmptyDeck(): void
+    {
+        $board = new Board();
+
+        /**
+         * @var Domino $domino1
+         * @var Domino $domino2
+         */
+        $domino1 = new Domino(2, 2);
+        $domino2 = new Domino(2, 3);
+        $domino3 = new Domino(2, 5);
+
+        $board->place($domino1);
+        $board->place($domino2);
+        $board->place($domino3);
+
+        $rightDomino = new Domino(1, 5);
+
+        $board->place($rightDomino);
+
+        $this->assertSame(3, $board->getLeftTile());
+        $this->assertSame(1, $board->getRightTile());
     }
 
     /**
