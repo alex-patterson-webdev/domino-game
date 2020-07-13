@@ -63,7 +63,7 @@ final class DominoGame
     /**
      * Deal a new set of dominoes to the players. This will remove any existing dominoes from the players.
      *
-     * @param int $handSize  The number of dominoes to deal to each player.
+     * @param int $handSize The number of dominoes to deal to each player.
      *
      * @throws DominoGameException
      */
@@ -86,13 +86,13 @@ final class DominoGame
             );
         }
 
+        // Ensure that we randomise the deck before dealing a domino to each player in turn
+        $this->deck->shuffle();
+
+        $this->logger->info(sprintf('Deck shuffled: %s', (string)$this->deck));
         $this->logger->info(
             sprintf('Dealing a hand size of %d dominoes to %d players', $handSize, $playerCount)
         );
-
-        // Ensure that we randomise the deck before dealing a domino to each player in turn
-        $this->deck->shuffle();
-        $this->logger->info(sprintf('Deck shuffled: %s', (string)$this->deck));
 
         foreach ($this->deck as $domino) {
             foreach ($this->players->getOrderedByLowestCount() as $player) {
@@ -101,7 +101,7 @@ final class DominoGame
                     $this->deck->removeElement($domino);
 
                     $this->logger->info(
-                        sprintf('Dealt domino %s to player %s', (string)$domino, (string)$player)
+                        sprintf('\'%s\' was dealt domino \'%s\'', (string)$player, (string)$domino)
                     );
 
                     // Move on to next domino
@@ -114,93 +114,30 @@ final class DominoGame
     /**
      * Run the game and return the winner.
      *
+     * @param int $handSize
+     *
      * @return Player
      *
      * @throws DominoGameException
      * @throws InvalidArgumentException
      */
-    public function run(): ?Player
+    public function run(int $handSize): ?Player
     {
-        $player = null;
+        $this->deal($handSize);
+        $this->logSummary();
 
         do {
-            $player = $this->takeTurns();
-        } while (null === $player);
+            $winner = $this->takeTurns();
+        } while (null === $winner);
 
-        return $player;
-    }
-
-    /**
-     * Each player executes a single turn. The first placement on the board will require the
-     * player with the highest double to place a single piece.
-     *
-     * @return Player|null
-     *
-     * @throws InvalidArgumentException
-     * @throws DominoGameException
-     */
-    private function takeTurns(): ?Player
-    {
-        $players = $this->board->isEmpty()
-            ? $this->players->getOrderedByHighestDouble()
-            : $this->players;
-
-        foreach ($players as $player) {
-            $winner = $this->takeTurn($player);
-
-            if (null === $winner && 0 === $player->getHandCount()) {
-                $winner = $player;
-            }
-
-            if (null !== $winner) {
-                $this->logger->info(sprintf('Player %s is the winner', (string)$player));
-                return $winner;
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * Perform a single turn for the provided player.
-     *
-     * @param Player $player
-     *
-     * @return Player|null
-     *
-     * @throws DominoGameException
-     * @throws InvalidArgumentException
-     */
-    private function takeTurn(Player $player): ?Player
-    {
-        $this->logger->info(sprintf('Player %s is taking a turn', (string)$player));
-
-        $domino = $player->getDominoWithMatchingTile($this->board);
-        if (null === $domino) {
-            $this->logger->info(sprintf('Player %s was unable to find a matching domino', (string)$player));
-
-            // If there are no more dominoes to pick, we need to resolve the winner
-            if ($this->deck->isEmpty()) {
-                return $this->players->getWithLowestHandValue();
-            }
-            // We could not find a matching tile to place so we have to pick up another
-            $this->logger->info(sprintf('Player %s has picked a new domino from the deck', (string)$player));
-            $player->addToHand($this->deck->pickRandom());
-            return null;
-        }
-
-        $this->logger->info(sprintf('Player %s has placed domino %s', (string)$player, (string)$domino));
-        $this->board->place($domino);
-        $player->removeFromHand($domino);
-
-        return null;
+        return $winner;
     }
 
     /**
      * Reset the game scores to zero and prepare a new boneyard so a new game can be played.
      *
      * @param PlayerCollection|Player[] $players
-     * @param int                                $maxTileSize
+     * @param int                       $maxTileSize
      *
      * @throws DominoGameException If the game cannot be reset
      */
@@ -240,6 +177,100 @@ final class DominoGame
     }
 
     /**
+     * Each player executes a single turn. The first placement on the board will require the
+     * player with the highest double to place a single piece.
+     *
+     * @return Player|null
+     *
+     * @throws InvalidArgumentException
+     * @throws DominoGameException
+     */
+    private function takeTurns(): ?Player
+    {
+        $players = $this->board->isEmpty()
+            ? $this->players->getOrderedByHighestDouble()
+            : $this->players;
+
+        foreach ($players as $player) {
+            $winner = $this->takeTurn($player);
+
+            if (null !== $winner) {
+                $this->logger->info(
+                    sprintf(
+                        '\'%s\' is the winner with the lowest hand value of \'%d\'',
+                        (string)$winner,
+                        $winner->getHandValue()
+                    )
+                );
+                return $winner;
+            }
+
+            if (null === $winner && 0 === $player->getHandCount()) {
+                $this->logger->info(
+                    sprintf(
+                        '\'%s\' is the winner with 0 cards left to play',
+                        (string)$player
+                    )
+                );
+                return $player;
+            }
+        }
+
+        $this->logSummary();
+        return null;
+    }
+
+    /**
+     * Perform a single turn for the provided player.
+     *
+     * @param Player $player
+     *
+     * @return Player|null
+     *
+     * @throws DominoGameException
+     * @throws InvalidArgumentException
+     */
+    private function takeTurn(Player $player): ?Player
+    {
+        $domino = $player->getDominoWithMatchingTile($this->board);
+        if (null === $domino) {
+            $this->logger->info(sprintf('Player %s was unable to find a matching domino', (string)$player));
+
+            // If there are no more dominoes to pick, we need to resolve the winner
+            if ($this->deck->isEmpty()) {
+                $this->logger->info(
+                    sprintf(
+                        '\'%s\' has no more cards available to pick, '
+                        . 'determining the winner from the lowest total score from each players hand',
+                        (string)$player
+                    )
+                );
+                return $this->players->getWithLowestHandValue();
+            }
+
+            // We could not find a matching tile to place so we have to pick up another
+            $randomPick = $this->deck->pickRandom();
+            $player->addToHand($randomPick);
+
+            $this->logger->info(
+                sprintf(
+                    '\'%s\' has picked domino %s from the deck',
+                    (string)$player,
+                    (string)$randomPick
+                )
+            );
+            return null;
+        }
+
+        $this->logger->info(sprintf('\'%s\' has placed domino %s', (string)$player, (string)$domino));
+
+        $this->board->place($domino);
+        $player->removeFromHand($domino);
+
+        return null;
+    }
+
+    /**
      * Generate the Domino collection (the 'boneyard') that players will pick from.
      *
      * @param int $maxTileSize
@@ -257,5 +288,21 @@ final class DominoGame
         }
 
         return $collection;
+    }
+
+    /**
+     * Log a summary of the current state of the board and players hands
+     */
+    private function logSummary(): void
+    {
+        if (!$this->deck->isEmpty()) {
+            $this->logger->info('Remaining tiles: ' . (string)$this->deck);
+        }
+
+        foreach ($this->players as $player) {
+            $this->logger->info(
+                sprintf('\'%s\' hand: %s', (string)$player, (string)$player->getHand())
+            );
+        }
     }
 }
