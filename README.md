@@ -1,3 +1,6 @@
+[![Build Status](https://travis-ci.com/alex-patterson-webdev/domino-game.svg?branch=master)](https://travis-ci.com/alex-patterson-webdev/domino-game)
+
+
 # Arp\DominoGame
 
 ## About
