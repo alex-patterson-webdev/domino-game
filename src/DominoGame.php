@@ -234,14 +234,14 @@ final class DominoGame
     {
         $domino = $player->getDominoWithMatchingTile($this->board);
         if (null === $domino) {
-            $this->logger->info(sprintf('Player %s was unable to find a matching domino', (string)$player));
+            $this->logger->info(sprintf('\'%s\' was unable to find a matching domino', (string)$player));
 
             // If there are no more dominoes to pick, we need to resolve the winner
             if ($this->deck->isEmpty()) {
                 $this->logger->info(
                     sprintf(
-                        '\'%s\' has no more cards available to pick, '
-                        . 'determining the winner from the lowest total score from each players hand',
+                        '\'%s\' has no more dominoes available to pick from the deck.'
+                        . 'Determining the winner from the lowest total score from each players hand',
                         (string)$player
                     )
                 );

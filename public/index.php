@@ -12,7 +12,7 @@ if (empty($playerNames)) {
 }
 
 $playerNameCount = count($playerNames);
-if ($playerNameCount < 1 || $playerNameCount > 4) {
+if ($playerNameCount > 4) {
     echo 'Please provide between 1-4 player names' . PHP_EOL;
     return 0;
 }
