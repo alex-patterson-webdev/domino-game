@@ -12,4 +12,11 @@ Installation via [composer](https://getcomposer.org).
     
 ## Usage
 
-@todo
+To play the Domino Game execute the `index.php` file from the command line; providing a comma separated list 
+of players who will playing. A minimum of two and a maximum of four players names must be provided.
+
+For example, to play with 3 players, `Fred`, `Bob` and `Alice`, use the following command.
+
+    php public/index.php Fred,Bob,Alice
+    
+The output will list, step by step, the players turns that are performed and the final winner.
