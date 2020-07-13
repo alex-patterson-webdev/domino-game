@@ -1,5 +1,6 @@
 [![Build Status](https://travis-ci.com/alex-patterson-webdev/domino-game.svg?branch=master)](https://travis-ci.com/alex-patterson-webdev/domino-game)
-
+[![codecov](https://codecov.io/gh/alex-patterson-webdev/domino-game/branch/master/graph/badge.svg)](https://codecov.io/gh/alex-patterson-webdev/domino-game)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/alex-patterson-webdev/domino-game/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/alex-patterson-webdev/domino-game/?branch=master)
 
 # Arp\DominoGame
 
