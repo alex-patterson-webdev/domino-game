@@ -208,7 +208,7 @@ final class DominoGame
             if (null === $winner && 0 === $player->getHandCount()) {
                 $this->logger->info(
                     sprintf(
-                        '\'%s\' is the winner with 0 cards left to play',
+                        '\'%s\' is the winner with 0 dominoes left to play',
                         (string)$player
                     )
                 );
@@ -240,7 +240,7 @@ final class DominoGame
             if ($this->deck->isEmpty()) {
                 $this->logger->info(
                     sprintf(
-                        '\'%s\' has no more dominoes available to pick from the deck.'
+                        '\'%s\' has no more dominoes available to pick from the deck. '
                         . 'Determining the winner from the lowest total score from each players hand',
                         (string)$player
                     )
