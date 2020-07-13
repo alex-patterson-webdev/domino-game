@@ -10,6 +10,10 @@ Installation via [composer](https://getcomposer.org).
 
     require alex-patterson-webdev/domino-game ^1
     
+Installation via GitHub
+
+    git clone https://github.com/alex-patterson-webdev/domino-game.git
+    
 ## Usage
 
 To play the Domino Game execute the `index.php` file from the command line; providing a comma separated list 
@@ -20,3 +24,9 @@ For example, to play with 3 players, `Fred`, `Bob` and `Alice`, use the followin
     php public/index.php Fred,Bob,Alice
     
 The output will list, step by step, the players turns that are performed and the final winner.
+
+## Unit Tests
+
+PHP Unit test using [PHPUnit](https://github.com/sebastianbergmann/phpunit). Execute the tests by running the following command.
+
+    php vendor/bin/phpunit
